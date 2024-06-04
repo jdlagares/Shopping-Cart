@@ -1,61 +1,13 @@
 
-import {useState,useEffect} from "react"
+
 import Header from "./components/Header"
 import Guitar from "./components/Guitar"
-import { db } from "./data/db"
+import {useCart} from "./hooks/useCart"
 
 function App() {
   //state
 
-  const InitialCart=()=>{
-    const localStorageCart= localStorage.getItem("cart")
-    return localStorageCart? [...JSON.parse(localStorageCart)]:[]
-
-  }
-  const [data]=useState(db)
-  const [cart,setCart]=useState(InitialCart)
-  
-  const MAX_ITEMS=5
-  const MIN_ITEMS=1
-
-  useEffect(()=>{
-    localStorage.setItem("cart",JSON.stringify(cart))
-  },[cart])
-
-  function addToCart(item){
-    const itemExist=cart.findIndex(guitar=>guitar.id===item.id)
-    if(itemExist>=0){
-      if(cart[itemExist].quantity>=MAX_ITEMS)return
-      const updatedCart=[...cart]
-      updatedCart[itemExist].quantity++
-      setCart(updatedCart)
-    }else{
-      item.quantity=1
-      setCart(prevCart=>[...prevCart,item])
-    }
-  }
-  function removeFromCart(id){
-    setCart(prevCart=>prevCart.filter(guitar=>guitar.id!== id))
-  }
-  function ManageQuantity(id,value){
-    const updatedCart=cart.map(item=>{
-      if(item.id==id &&item.quantity+value<=MAX_ITEMS && item.quantity+value>=MIN_ITEMS ){
-        return {
-          ...item,
-          quantity: item.quantity+value
-        }
-        
-      }
-      return item
-    })
-    //updatedCart=updatedCart.filter(item=>item.quantity!==0)
-    setCart(updatedCart)
-  }
-
-  function clearCart(){
-    setCart([])
-  }
-
+  const {data,cart,addToCart,removeFromCart,ManageQuantity,clearCart,isEmpty,cartTotal}= useCart()
   return (
     <>
       <Header 
@@ -63,6 +15,8 @@ function App() {
       removeFromCart={removeFromCart}
       ManageQuantity={ManageQuantity}
       clearCart={clearCart}
+      isEmpty={isEmpty}
+      cartTotal={cartTotal}
       />
   
 
